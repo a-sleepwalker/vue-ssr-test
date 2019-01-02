@@ -5,6 +5,9 @@ const merge = require('webpack-merge');
 const TARGET_NODE = process.env.WEBPACK_TARGET === 'node';
 
 module.exports = {
+  devServer: {
+    headers: {'Access-Control-Allow-Origin': '*'}
+  },
   configureWebpack: config => {
     return {
       entry: `./src/entry-${TARGET_NODE ? 'server' : 'client'}.js`,
@@ -14,18 +17,9 @@ module.exports = {
       output: {
         libraryTarget: TARGET_NODE ? 'commonjs2' : undefined
       },
-      externals: nodeExternals({
+      externals: TARGET_NODE ? nodeExternals({
         whiteList: [/\.css$/]
-      }),
-      optimization: {
-        splitChunks: {
-          chunks: 'async',
-          minSize: 30000,
-          minChunks: 3,
-          maxAsyncRequests: 6,
-          maxInitialRequests: 3
-        }
-      },
+      }) : undefined,
       plugins: [
         TARGET_NODE
           ? new VueSSRServerPlugin()
@@ -34,10 +28,13 @@ module.exports = {
     };
   },
   chainWebpack: config => {
-    config.module.rule('vue').use('vue-loader').tap(option => {
-      merge(option, {
-        optimizeSSR: false
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap(option => {
+        merge(option, {
+          optimizeSSR: false
+        });
       });
-    });
   }
 };

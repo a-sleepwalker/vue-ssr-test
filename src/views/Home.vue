@@ -8,19 +8,16 @@
 
 <script>
   // @ is an alias to /src
-  import HelloWorld from '@/components/HelloWorld.vue';
+  import HelloWorld from '../../src/components/HelloWorld.vue';
 
   export default {
-    asyncData({store, route}) {
-      return store.dispatch('FetchItem', 78, 'hi');
-    },
     name: 'home',
     components: {
       HelloWorld
     },
     computed: {
       item() {
-        return this.$store.state.items['78'];
+        return {title: 1222};
       }
     }
   };
